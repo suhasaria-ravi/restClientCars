@@ -90,40 +90,39 @@ public class RestClientApplication implements CommandLineRunner{
 				try {
 
 					carResponseArr = mapper.readValue(responseEntity.getBody(), CarsResponse[].class);
-					log.info("CarsResponse Array=" + carResponseArr + "\nCarsResponse size=" + carResponseArr.length);
+					log.info("CarsResponse Array=" + carResponseArr + "\nCarsResponse size=" + carResponseArr.length);									
+
+					CarsResponse[] sortedCarResponse = new CarsResponse[carResponseArr.length];
+	
+					int i = 0;
+	
+					//sort the response Cars for each CarShow
+					for (CarsResponse cars : carResponseArr) {
+						ArrayList<Car> sortedCars = sortCars(cars);
+						sortedCarResponse[i] = new CarsResponse();
+						sortedCarResponse[i].setCars(sortedCars);
+						sortedCarResponse[i].setName(cars.getName());
+						i++;
+					}
+	
+					System.out.println("\n\n*****SORTED OUTPUT STARTS************ \n\n");
 					
+					//display the sorted cars and their show names.
+					for (CarsResponse allCars : sortedCarResponse) {
+						ArrayList<Car> allSortedCars = (ArrayList<Car>) allCars.getCars();
+						for (Car c : allSortedCars) {
+							System.out.println("--------------------------");
+							System.out.println(c.getMake());
+							System.out.println("    " + c.getModel());
+							System.out.println("       " + allCars.getName());
+							System.out.println("--------------------------");
+						} 
+	
+					}
 				} catch (Exception e) {
 					//in case of not able to parse, log error and return
 					log.error("Could not parse JSON String::" + responseEntity.getBody());
 					return;
-				}
-
-				CarsResponse[] sortedCarResponse = new CarsResponse[carResponseArr.length];
-
-				int i = 0;
-
-				//sort the response Cars for each CarShow
-				for (CarsResponse cars : carResponseArr) {
-					ArrayList<Car> sortedCars = sortCars(cars);
-					sortedCarResponse[i] = new CarsResponse();
-					sortedCarResponse[i].setCars(sortedCars);
-					sortedCarResponse[i].setName(cars.getName());
-					i++;
-				}
-
-				System.out.println("\n\n*****SORTED OUTPUT STARTS************ \n\n");
-				
-				//display the sorted cars and their show names.
-				for (CarsResponse allCars : sortedCarResponse) {
-					ArrayList<Car> allSortedCars = (ArrayList<Car>) allCars.getCars();
-					for (Car c : allSortedCars) {
-						System.out.println("--------------------------");
-						System.out.println(c.getMake());
-						System.out.println("    " + c.getModel());
-						System.out.println("       " + allCars.getName());
-						System.out.println("--------------------------");
-					} 
-
 				}
 
 				System.out.println("\n\n*****SORTED OUTPUT ENDS************ \n\n");
